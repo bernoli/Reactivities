@@ -21,7 +21,7 @@ namespace API.Controllers
 
         // GET api/values
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> Get()
+        public async Task<ActionResult<IEnumerable<Value>>> Get()
         {
 
             var data = await _dbContext.Values.ToAsyncEnumerable().ToArray();
@@ -30,7 +30,7 @@ namespace API.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<string>> Get(int id)
+        public async Task<ActionResult<Value>> Get(int id)
         {
             var value = await _dbContext.Values.FindAsync(id);
             if (value != null)
