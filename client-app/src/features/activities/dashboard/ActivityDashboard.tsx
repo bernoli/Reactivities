@@ -1,16 +1,18 @@
-import React, { useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { Grid } from "semantic-ui-react";
 import ActivityList from "./ActivityList";
-import ActivityDetails from "../details/ActivityDetails";
-import ActivityForm from "../form/ActivityForm";
 import {observer} from 'mobx-react-lite';
-import ActivityStore from '../../../app/stores/activityStore';
-
+import ActivityStore from "../../../app/stores/activityStore";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 
 const ActivityDashboard: React.FC = () => {
+  const activityStore = useContext(ActivityStore);
+  useEffect(() => {
+    activityStore.loadActivities();
+  }, [activityStore]);
 
-const activityStore = useContext(ActivityStore);
-const {selectedActivity, editMode} = activityStore;
+  if (activityStore.loadingInitial)
+    return <LoadingComponent content="Loading activities..." />;
 
   return (
     <Grid>
@@ -18,15 +20,7 @@ const {selectedActivity, editMode} = activityStore;
         <ActivityList/>
       </Grid.Column>
       <Grid.Column width={6}>
-        {selectedActivity && !editMode && (
-          <ActivityDetails />
-        )}
-        {editMode && (
-          <ActivityForm
-            key={(selectedActivity && selectedActivity.id) || 0} // important, since we need to re-render the form.
-            activity={selectedActivity!}
-          />
-        )}
+        <h2>Activity Filters...</h2>
       </Grid.Column>
     </Grid>
   );
