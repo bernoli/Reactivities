@@ -13,8 +13,26 @@ class ActivityStore {
   @observable target: string = "";
 
   @computed get activitiesByDate() {
-    return Array.from(this.activityRegistry.values()).sort(
+    return this.groupActivitiesByDate(
+      Array.from(this.activityRegistry.values())
+    );
+  }
+
+  groupActivitiesByDate(activities: IActivity[]) {
+    const sortedActivities = activities.sort(
       (a, b) => Date.parse(a.date) - Date.parse(b.date)
+    );
+    return Object.entries(
+      sortedActivities.reduce(
+        (activities, activity) => {
+          const date = activity.date.split("T")[0];
+          activities[date] = activities[date]
+            ? [...activities[date], activity]
+            : [activity];
+          return activities;
+        },
+        {} as { [key: string]: IActivity[] }
+      )
     );
   }
 
@@ -49,12 +67,12 @@ class ActivityStore {
       this.loadingInitial = true;
       try {
         activity = await agent.Activities.details(id);
-        runInAction('getting activity',() => {
+        runInAction("getting activity", () => {
           this.activity = activity;
           this.loadingInitial = false;
         });
       } catch (error) {
-        runInAction('get activity error.',() => {
+        runInAction("get activity error.", () => {
           this.loadingInitial = false;
         });
         console.log(error);
@@ -62,9 +80,9 @@ class ActivityStore {
     }
   };
 
-  @action clearActivity = ()=>{
+  @action clearActivity = () => {
     this.activity = null;
-  }
+  };
 
   getActivity = (id: string) => {
     return this.activityRegistry.get(id); // when no match returns value or undefined
@@ -125,7 +143,6 @@ class ActivityStore {
       console.log(error);
     }
   };
-
 }
 
 export default createContext(new ActivityStore());
