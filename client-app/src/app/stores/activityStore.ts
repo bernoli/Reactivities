@@ -43,6 +43,7 @@ class ActivityStore {
   @action loadActivities = async () => {
     this.loadingInitial = true;
     try {
+      this.activityRegistry.clear();
       const activities = await agent.Activities.list();
       runInAction("loading activities", () => {
         activities.forEach(activity => {
@@ -76,6 +77,7 @@ class ActivityStore {
           this.loadingInitial = false;
         });
         console.log(error);
+        //throw error;
       }
     }
   };

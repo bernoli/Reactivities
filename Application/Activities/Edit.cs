@@ -1,6 +1,9 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
+using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -19,6 +22,20 @@ namespace Application.Activities
             public string Venue { get; set; }
         }
 
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x.Id).NotEmpty();
+                RuleFor(x => x.Title).NotEmpty();
+                RuleFor(x => x.Description).NotEmpty();
+                RuleFor(x => x.Category).NotEmpty();
+                RuleFor(x => x.Date).NotEmpty();
+                RuleFor(x => x.City).NotEmpty();
+                RuleFor(x => x.Venue).NotEmpty();
+            }
+        }
+
         public class Handler : IRequestHandler<Command>
         {
             private readonly DataContext _dbContext;
@@ -32,15 +49,19 @@ namespace Application.Activities
             {
                 var activity = await _dbContext.Activities.FindAsync(request.Id);
                 if (activity == null)
-                    throw new Exception($"Could not find activity [{request.Id}]");
-
+                {
+                    throw new RestException(HttpStatusCode.NotFound, new
+                    {
+                        activity = $"Activity [{request.Id}] could not be found."
+                    });
+                }
                 activity.Title = request.Title ?? activity.Title;
                 activity.Description = request.Description ?? activity.Description;
                 activity.Date = request.Date?? activity.Date;
                 activity.City = request.City?? activity.City;
                 activity.Venue = request.Venue ?? activity.Venue;
                 activity.Category = request.Category?? activity.Category;
-                
+
                 // activity in the context is being updated, therefore only need to save.
 
                 var success = await _dbContext.SaveChangesAsync() > 0; // SaveChanges return the number of rows saved.

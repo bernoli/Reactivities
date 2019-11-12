@@ -1,6 +1,8 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
 using MediatR;
 using Persistence;
 
@@ -25,17 +27,19 @@ namespace Application.Activities
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var activity = await _dbContext.Activities.FindAsync(request.Id);
-                if (activity != null)
+                if (activity == null)
                 {
-                    _dbContext.Activities.Remove(activity);
-                    var success = await _dbContext.SaveChangesAsync() > 0; // SaveChanges return the number of rows saved.
-                    if (success)
-                        return Unit.Value;
-                    throw new Exception("Problem saving changes.");
+                    throw new RestException(HttpStatusCode.NotFound,
+                        new
+                        {
+                            activity = $"Could not find activity [{request.Id}]"
+                        });
                 }
-                throw new Exception($"Could not find activity [{request.Id}]");
-                // implement command logic here, return Unit.Value upon success
-
+                _dbContext.Activities.Remove(activity);
+                var success = await _dbContext.SaveChangesAsync() > 0; // SaveChanges return the number of rows saved.
+                if (success)
+                    return Unit.Value;
+                throw new Exception("Problem saving changes.");
             }
         }
     }
