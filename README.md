@@ -2,10 +2,18 @@
 This is a project which is based on React course.
 Code is based on the course, also the structure of the solutions, projects and the libraties used.
 
-## Topics Covered and Technologies Stacks
-- Building React Application using Web API.
-- Using sqlite.
-- Asp.net core 2.
-- Entity Framework.
-- Clean Architecture using Domain model.
+## Topics & Technology Stack
+- Building React Application using Web API / RESTFul.
+- SQLite.
+- ASP.NET Core.
+- Entity Framework Core.
+- Clean.
+- React Libraries:
+  - Mobx
+  - Axios
+  - Semantic-UI-React
+  - date-fns
+  - React-Widgets
+  - More...
+  
 
