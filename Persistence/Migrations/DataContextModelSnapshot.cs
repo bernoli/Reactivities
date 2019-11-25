@@ -14,7 +14,7 @@ namespace Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
 
             modelBuilder.Entity("Domain.Activity", b =>
                 {
@@ -53,17 +53,17 @@ namespace Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Value101"
+                            Name = "Value 101"
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Value102"
+                            Name = "Value 102"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "Value103"
+                            Name = "Value 103"
                         });
                 });
 #pragma warning restore 612, 618

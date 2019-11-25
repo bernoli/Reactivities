@@ -17,29 +17,26 @@ namespace Application.Activities
 
         public class Handler : IRequestHandler<Command>
         {
-            private readonly DataContext _dbContext;
-
-            public Handler(DataContext dbContext)
+            private readonly DataContext _context;
+            public Handler(DataContext context)
             {
-                _dbContext = dbContext;
+                _context = context;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var activity = await _dbContext.Activities.FindAsync(request.Id);
+                var activity = await _context.Activities.FindAsync(request.Id);
+
                 if (activity == null)
-                {
-                    throw new RestException(HttpStatusCode.NotFound,
-                        new
-                        {
-                            activity = $"Could not find activity [{request.Id}]"
-                        });
-                }
-                _dbContext.Activities.Remove(activity);
-                var success = await _dbContext.SaveChangesAsync() > 0; // SaveChanges return the number of rows saved.
-                if (success)
-                    return Unit.Value;
-                throw new Exception("Problem saving changes.");
+                    throw new RestException(HttpStatusCode.NotFound, new {Activity = "Not found"});
+
+                _context.Remove(activity);              
+
+                var success = await _context.SaveChangesAsync() > 0;
+
+                if (success) return Unit.Value;
+
+                throw new Exception("Problem saving changes");
             }
         }
     }

@@ -21,48 +21,46 @@ namespace Application.Activities
             public string Venue { get; set; }
         }
 
-        public class CommandValidator:AbstractValidator<Command>{
-
+        public class CommandValidator : AbstractValidator<Command>
+        {
             public CommandValidator()
             {
-                RuleFor(x=>x.Title).NotEmpty();
-                RuleFor(x=>x.Description).NotEmpty();
-                RuleFor(x=>x.Category).NotEmpty();
-                RuleFor(x=>x.Date).NotEmpty();
-                RuleFor(x=>x.City).NotEmpty();
-                RuleFor(x=>x.Venue).NotEmpty();
+                RuleFor(x => x.Title).NotEmpty();
+                RuleFor(x => x.Description).NotEmpty();
+                RuleFor(x => x.Category).NotEmpty();
+                RuleFor(x => x.Date).NotEmpty();
+                RuleFor(x => x.City).NotEmpty();
+                RuleFor(x => x.Venue).NotEmpty();
             }
         }
 
         public class Handler : IRequestHandler<Command>
         {
-            private readonly DataContext _dbContext;
-
-            public Handler(DataContext dbContext)
+            private readonly DataContext _context;
+            public Handler(DataContext context)
             {
-                _dbContext = dbContext;
+                _context = context;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var activity = new Activity()
+                var activity = new Activity
                 {
                     Id = request.Id,
                     Title = request.Title,
-                    Date = request.Date,
                     Description = request.Description,
                     Category = request.Category,
+                    Date = request.Date,
                     City = request.City,
-                    Venue = request.Venue,
+                    Venue = request.Venue
                 };
 
-                _dbContext.Activities.Add(activity);
-                var success = await _dbContext.SaveChangesAsync() > 0; // SaveChanges return the number of rows saved.
-                if (success)
-                {
-                    return Unit.Value; // just to indicate that this was a successful operation.
-                }
-                throw new Exception("Problem saving changes.");
+                _context.Activities.Add(activity);
+                var success = await _context.SaveChangesAsync() > 0;
+
+                if (success) return Unit.Value;
+
+                throw new Exception("Problem saving changes");
             }
         }
     }

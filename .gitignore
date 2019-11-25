@@ -1,8 +1,4 @@
-obj/
-bin/
-.vscode
+bin
+obj
 .DS_Store
-appsettings.json
 *.db
-node_modules/
-client-app/README_LIST.md

@@ -13,26 +13,29 @@ namespace API
         public static void Main(string[] args)
         {
             var host = CreateWebHostBuilder(args).Build();
-            using(var scope = host.Services.CreateScope())
+            
+            using (var scope = host.Services.CreateScope())
             {
-                try
+                var services = scope.ServiceProvider;
+                try 
+                
                 {
-                    var dbcontext = scope.ServiceProvider.GetService<DataContext>();
-                    dbcontext.Database.Migrate();
-                    Seed.SeedData(dbcontext);
+                    var context = services.GetRequiredService<DataContext>();
+                    context.Database.Migrate();
+                    Seed.SeedData(context);
                 }
                 catch (Exception ex)
                 {
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                    logger.LogError($"An error occurred migrating databse [{ex.Message}].", ex);
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occured during migration");
                 }
-
             }
+
             host.Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>();
+                .UseStartup<Startup>();
     }
 }

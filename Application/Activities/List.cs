@@ -1,33 +1,29 @@
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Domain;
 using MediatR;
-using Persistence;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Persistence;
 
-// This is a recommanded pattern for writing Mediator handlers which are the Use Cases
 namespace Application.Activities
 {
     public class List
     {
-        public class Query:IRequest<List<Activity>>{ // IRequest is from MediatR, in our case we return List<Activity>
-            // we don't neet to add any properties.
-        }
+        public class Query : IRequest<List<Activity>> { }
 
-        // This is the handler responsible from bringing all the activities from database and return them.
-        public class Handler : IRequestHandler<Query, List<Activity>> // receive Query (defined above), return List<Activity>
+        public class Handler : IRequestHandler<Query, List<Activity>>
         {
-            private readonly DataContext _dbContext;
-
-            public Handler(DataContext dbContext)
+            private readonly DataContext _context;
+            public Handler(DataContext context)
             {
-                _dbContext = dbContext;
+                _context = context;
             }
 
             public async Task<List<Activity>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var activities = await  _dbContext.Activities.ToListAsync();
+                var activities = await _context.Activities.ToListAsync();
+
                 return activities;
             }
         }

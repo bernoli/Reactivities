@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace API.Middlewares
+namespace API.Middleware
 {
     public class ErrorHandlingMiddleware
     {
@@ -23,38 +23,35 @@ namespace API.Middlewares
             try
             {
                 await _next(context);
-            }
+            } 
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex);
+                await HandleExceptionAsync(context, ex, _logger);
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex, ILogger<ErrorHandlingMiddleware> logger)
         {
             object errors = null;
+
             switch (ex)
             {
                 case RestException re:
-                    {
-                        _logger.LogError(ex, "REST_ERROR");
-                        errors = re.Errors;
-                        context.Response.StatusCode = (int) re.Code;
-                    }
+                    logger.LogError(ex, "REST ERROR");
+                    errors = re.Errors;
+                    context.Response.StatusCode = (int)re.Code;
                     break;
                 case Exception e:
-                    {
-                        _logger.LogError(e, "SERVER_ERROR");
-                        errors = string.IsNullOrWhiteSpace(e.Message) ? "Error" : e.Message;
-                        context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
-                    }
+                    logger.LogError(ex, "SERVER ERROR");
+                    errors = string.IsNullOrWhiteSpace(e.Message) ? "Error" : e.Message;
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     break;
             }
 
             context.Response.ContentType = "application/json";
             if (errors != null)
             {
-                var result = JsonConvert.SerializeObject(new
+                var result = JsonConvert.SerializeObject(new 
                 {
                     errors
                 });
