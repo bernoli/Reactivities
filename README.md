@@ -7,9 +7,9 @@ Code is based on the course, also the structure of the solutions, projects and t
 - SQLite.
 - ASP.NET Core.
 - Entity Framework Core.
-- Clean.
+- Clean Architecture.
 - React Libraries:
-  - Mobx
+  - MobX
   - Axios
   - Semantic-UI-React
   - date-fns
